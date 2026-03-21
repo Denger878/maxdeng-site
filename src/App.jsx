@@ -25,6 +25,28 @@ const travelData = [
   },
 ];
  
+// Pokemon card images from the official Pokemon TCG API CDN
+const pokeCards = [
+  {
+    id: "darkrai",
+    name: "Darkrai #BW73",
+    set: "BW Promo",
+    img: "https://images.pokemontcg.io/bwp/BW73.png",
+  },
+  {
+    id: "drampa",
+    name: "Drampa #184",
+    set: "Temporal Forces",
+    img: "https://images.pokemontcg.io/sv5/184.png",
+  },
+  {
+    id: "regice",
+    name: "Regice ★ #90",
+    set: "Legend Maker",
+    img: "https://images.pokemontcg.io/ex12/90.png",
+  },
+];
+ 
 function worldToSVG(lat, lng, width, height) {
   const x = ((lng + 180) / 360) * width;
   const y = ((90 - lat) / 180) * height;
@@ -47,7 +69,7 @@ export default function App() {
  
   return (
     <div className="site-wrapper">
-      {/* LEFT PANEL — About */}
+      {/* LEFT PANEL */}
       <aside className="about-panel">
         <div className="about-inner">
           <h1 className="name">Max Deng | 邓东垚</h1>
@@ -101,18 +123,42 @@ export default function App() {
  
             <li>
               <span className="bullet">↳</span>
-              <span>pokémon enthusiast — ask me about my team 🎮</span>
+              <span>
+                pokémon card collector — some favorites:
+              </span>
             </li>
+ 
+            {/* Pokemon card row */}
+            <li className="card-row-item">
+              <div className="card-row">
+                {pokeCards.map((card) => (
+                  <div className="poke-card" key={card.id}>
+                    <img
+                      src={card.img}
+                      alt={card.name}
+                      className="poke-card-img"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "flex";
+                      }}
+                    />
+                    <div className="poke-card-fallback" style={{ display: "none" }}>
+                      <span>🃏</span>
+                      <p>{card.name}</p>
+                    </div>
+                    <p className="poke-card-label">{card.name}</p>
+                    <p className="poke-card-set">{card.set}</p>
+                  </div>
+                ))}
+              </div>
+            </li>
+ 
             <li>
               <span className="bullet">↳</span>
               <span>
-                football lover, proud{" "}
-                <span className="united">Manchester United</span> supporter ⚽
+                places i've been (click the pins){" "}
+                <span className="map-arrow">→</span>
               </span>
-            </li>
-            <li>
-              <span className="bullet">↳</span>
-              <span>this map tracks everywhere I've been — click the pins!</span>
             </li>
           </ul>
  
@@ -145,7 +191,6 @@ export default function App() {
       {/* RIGHT PANEL — Map */}
       <main className="map-panel">
         <div className="map-box">
-          {/* Blurred map background when popup is open */}
           <div className={`map-svg-wrapper ${activeLocation ? "map-blurred" : ""}`}>
             <svg
               viewBox={`0 0 ${SVG_W} ${SVG_H}`}
@@ -169,24 +214,17 @@ export default function App() {
             </svg>
           </div>
  
-          {/* Popup — lives inside map-box, not full screen */}
           {activeLocation && (
             <div className="map-popup-overlay" onClick={closePopup}>
               <div className="popup-card" onClick={(e) => e.stopPropagation()}>
                 <button className="popup-close" onClick={closePopup}>✕</button>
- 
                 <div className="popup-header">
                   <div className="popup-location">📍 {activeLocation.name}</div>
                 </div>
- 
                 <div className="photo-area">
                   {activeLocation.photos.length > 0 ? (
                     <>
-                      <img
-                        src={activeLocation.photos[photoIndex]}
-                        alt={activeLocation.name}
-                        className="popup-photo"
-                      />
+                      <img src={activeLocation.photos[photoIndex]} alt={activeLocation.name} className="popup-photo" />
                       {activeLocation.photos.length > 1 && (
                         <div className="carousel-controls">
                           <button onClick={() => setPhotoIndex((i) => Math.max(0, i - 1))} disabled={photoIndex === 0}>‹</button>
@@ -202,9 +240,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
- 
                 <div className="popup-caption">{activeLocation.caption}</div>
- 
                 {activeLocation.photos.length > 1 && (
                   <div className="dot-row">
                     {activeLocation.photos.map((_, i) => (
@@ -246,3 +282,4 @@ function WorldMap() {
     </g>
   );
 }
+ 
