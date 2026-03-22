@@ -1,45 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap');
- 
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
- 
+
 :root {
   --white: #ffffff;
   --off-white: #f7f6f3;
   --ink: #1a1a1a;
-  --ink-body: #2e2e2e;       /* slightly lighter than name, darker than before */
+  --ink-body: #2e2e2e;
   --ink-light: #666;
   --red: #DA291C;
   --border: #e2ddd8;
   --border-dark: #b8b0a8;
-  --map-bg: #e8f0f7;
   --shadow: 0 2px 24px rgba(0,0,0,0.07);
+  --uw-gold: #FFC72C;
+  --rbc-blue: #0051A5;
 }
- 
+
 html, body, #root {
   height: 100%;
   width: 100%;
   overflow: hidden;
 }
- 
+
 body {
   background: var(--white);
   color: var(--ink-body);
   font-family: 'Crimson Text', Georgia, serif;
   -webkit-font-smoothing: antialiased;
 }
- 
-/* ── Layout ── */
+
 .site-wrapper {
   display: grid;
   grid-template-columns: 1fr 2fr;
   height: 100vh;
   width: 100vw;
 }
- 
+
 /* ── About Panel ── */
 .about-panel {
   border-right: 1px solid var(--border);
@@ -49,7 +49,7 @@ body {
   display: flex;
   flex-direction: column;
 }
- 
+
 .about-inner {
   padding: 52px 40px 40px;
   display: flex;
@@ -57,7 +57,7 @@ body {
   gap: 0;
   min-height: 100%;
 }
- 
+
 .name {
   font-family: 'Crimson Text', serif;
   font-size: 2.8rem;
@@ -67,14 +67,14 @@ body {
   color: var(--ink);
   margin-bottom: 20px;
 }
- 
+
 .divider {
   width: 100%;
   height: 1px;
   background: var(--border);
   margin-bottom: 28px;
 }
- 
+
 .info-list {
   list-style: none;
   display: flex;
@@ -82,7 +82,7 @@ body {
   gap: 16px;
   flex: 1;
 }
- 
+
 .info-list li {
   display: flex;
   gap: 12px;
@@ -91,7 +91,7 @@ body {
   color: var(--ink-body);
   align-items: flex-start;
 }
- 
+
 .bullet {
   font-family: 'Crimson Text', serif;
   color: var(--ink-light);
@@ -100,17 +100,16 @@ body {
   padding-top: 2px;
   flex-shrink: 0;
 }
- 
-/* ── "other" section label — BIG ── */
+
 .section-header-item {
   margin-top: 12px;
   margin-bottom: -2px;
   display: block !important;
 }
- 
+
 .section-label {
   font-family: 'Crimson Text', serif;
-  font-size: 1.55rem;         /* bigger than body, smaller than name */
+  font-size: 1.55rem;
   font-weight: 400;
   font-style: italic;
   letter-spacing: 0.04em;
@@ -120,8 +119,7 @@ body {
   display: inline-block;
   width: 100%;
 }
- 
-/* ── Links ── */
+
 .link {
   color: var(--ink-body);
   text-decoration: underline;
@@ -132,55 +130,55 @@ body {
   align-items: center;
   gap: 4px;
 }
- 
-.link:hover {
-  text-decoration-color: var(--red);
-  color: var(--red);
+
+.link-uwaterloo:hover {
+  color: #c89000;
+  text-decoration-color: var(--uw-gold);
 }
- 
+
+.link-rbc:hover {
+  color: var(--rbc-blue);
+  text-decoration-color: var(--rbc-blue);
+}
+
 .site-favicon {
   width: 14px;
   height: 14px;
   border-radius: 2px;
   object-fit: contain;
-  vertical-align: middle;
   display: inline-block;
   flex-shrink: 0;
 }
- 
-.united {
-  color: var(--red);
-  font-weight: 600;
-}
- 
-/* ── Map arrow ── */
+
+.united { color: var(--red); font-weight: 600; }
+
 .map-arrow {
   font-size: 1.1rem;
   color: var(--ink-light);
   margin-left: 2px;
 }
- 
-/* ── Pokémon card row ── */
+
+/* ── Pokémon cards ── */
 .card-row-item {
   display: block !important;
   padding-left: 0 !important;
   gap: 0 !important;
 }
- 
+
 .card-row {
   display: flex;
   gap: 10px;
   padding: 4px 0 2px;
 }
- 
+
 .poke-card {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
- 
+
 .poke-card-img {
   width: 100%;
   border-radius: 6px;
@@ -188,18 +186,19 @@ body {
   display: block;
   transition: transform 0.2s, box-shadow 0.2s;
 }
- 
+
 .poke-card-img:hover {
   transform: translateY(-3px) scale(1.03);
   box-shadow: 0 6px 16px rgba(0,0,0,0.18);
 }
- 
+
 .poke-card-fallback {
   width: 100%;
   aspect-ratio: 2.5/3.5;
   border-radius: 6px;
   background: var(--off-white);
   border: 1px solid var(--border);
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -209,22 +208,30 @@ body {
   text-align: center;
   padding: 4px;
 }
- 
+
+.poke-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
 .poke-card-label {
   font-family: 'Courier Prime', monospace;
   font-size: 0.62rem;
   color: var(--ink-light);
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
 }
- 
+
 .poke-card-set {
   font-family: 'Courier Prime', monospace;
   font-size: 0.58rem;
   color: #aaa;
   text-align: center;
+  line-height: 1.2;
 }
- 
+
 /* ── Socials ── */
 .socials {
   margin-top: auto;
@@ -234,7 +241,7 @@ body {
   align-items: center;
   border-top: 1px solid var(--border);
 }
- 
+
 .social-link {
   color: var(--ink-light);
   display: flex;
@@ -246,12 +253,12 @@ body {
   transition: color 0.2s, background 0.2s;
   text-decoration: none;
 }
- 
+
 .social-link:hover {
   color: var(--ink);
   background: var(--off-white);
 }
- 
+
 /* ── Map Panel ── */
 .map-panel {
   position: relative;
@@ -262,59 +269,44 @@ body {
   padding: 32px;
   overflow: hidden;
 }
- 
+
 .map-box {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--map-bg);
   border-radius: 16px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
- 
-.map-svg-wrapper {
+
+.mapbox-container {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: filter 0.3s ease, transform 0.3s ease;
+  transition: filter 0.3s ease;
 }
- 
-.map-svg-wrapper.map-blurred {
+
+.mapbox-container.map-blurred {
   filter: blur(5px) brightness(0.85);
-  transform: scale(1.02);
 }
- 
-.world-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
+
+/* Hide Mapbox wordmark */
+.mapboxgl-ctrl-logo { display: none !important; }
+.mapboxgl-ctrl-attrib { display: none !important; }
+
+/* ── Custom pin ── */
+.map-pin {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
 }
- 
-/* ── Markers ── */
-.marker-label {
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
+
+.map-pin:hover {
+  transform: scale(1.25) translateY(-2px);
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
 }
- 
-g:hover .marker-label {
-  opacity: 1;
-}
- 
-@keyframes pulse {
-  0%, 100% { opacity: 0.85; }
-  50% { opacity: 1; }
-}
- 
-.marker-pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
- 
-/* ── Popup overlay — inside map-box only, tight padding ── */
+
+/* ── Popup ── */
 .map-popup-overlay {
   position: absolute;
   inset: 0;
@@ -323,14 +315,14 @@ g:hover .marker-label {
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.2s ease;
-  padding: 14px;           /* tight margin so card fills the map nicely */
+  padding: 14px;
 }
- 
+
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
- 
+
 .popup-card {
   background: var(--white);
   border-radius: 12px;
@@ -342,12 +334,12 @@ g:hover .marker-label {
   animation: slideUp 0.25s cubic-bezier(0.4,0,0.2,1);
   position: relative;
 }
- 
+
 @keyframes slideUp {
   from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
- 
+
 .popup-close {
   position: absolute;
   top: 10px;
@@ -366,24 +358,24 @@ g:hover .marker-label {
   border-radius: 50%;
   transition: background 0.2s;
 }
- 
+
 .popup-close:hover {
   background: var(--off-white);
   color: var(--ink);
 }
- 
+
 .popup-header {
   padding: 14px 16px 10px;
   border-bottom: 1px solid var(--border);
 }
- 
+
 .popup-location {
   font-family: 'Courier Prime', monospace;
   font-size: 0.76rem;
   letter-spacing: 0.06em;
   color: var(--ink-light);
 }
- 
+
 .photo-area {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -394,14 +386,14 @@ g:hover .marker-label {
   position: relative;
   overflow: hidden;
 }
- 
+
 .popup-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
- 
+
 .photo-placeholder {
   display: flex;
   flex-direction: column;
@@ -409,17 +401,15 @@ g:hover .marker-label {
   gap: 10px;
   color: var(--ink-light);
 }
- 
-.photo-placeholder span {
-  font-size: 2.5rem;
-}
- 
+
+.photo-placeholder span { font-size: 2.5rem; }
+
 .photo-placeholder p {
   font-family: 'Courier Prime', monospace;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
 }
- 
+
 .carousel-controls {
   position: absolute;
   bottom: 12px;
@@ -434,7 +424,7 @@ g:hover .marker-label {
   font-family: 'Courier Prime', monospace;
   font-size: 0.75rem;
 }
- 
+
 .carousel-controls button {
   background: none;
   border: none;
@@ -444,12 +434,12 @@ g:hover .marker-label {
   padding: 0 2px;
   line-height: 1;
 }
- 
+
 .carousel-controls button:disabled {
   opacity: 0.3;
   cursor: default;
 }
- 
+
 .popup-caption {
   padding: 12px 16px 8px;
   font-size: 1.05rem;
@@ -457,14 +447,14 @@ g:hover .marker-label {
   color: var(--ink-body);
   line-height: 1.5;
 }
- 
+
 .dot-row {
   display: flex;
   justify-content: center;
   gap: 6px;
   padding: 4px 0 14px;
 }
- 
+
 .dot {
   width: 6px;
   height: 6px;
@@ -475,11 +465,9 @@ g:hover .marker-label {
   padding: 0;
   transition: background 0.2s;
 }
- 
-.dot.active {
-  background: var(--ink);
-}
- 
+
+.dot.active { background: var(--ink); }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .site-wrapper {
