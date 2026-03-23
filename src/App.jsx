@@ -1,33 +1,33 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.css";
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
 const travelData = [
-  { id: "london",      name: "London, UK",              coords: [-0.1278,   51.5074], caption: "Caught a Man United away game" },
-  { id: "manchester",  name: "Manchester, UK",           coords: [-2.2426,   53.4808], caption: "Old Trafford" },
-  { id: "paris",       name: "Paris, France",            coords: [2.3522,    48.8566], caption: "City of lights" },
-  { id: "chamonix",    name: "Chamonix, France",         coords: [6.8696,    45.9237], caption: "Alps at their finest" },
-  { id: "barcelona",   name: "Barcelona, Spain",         coords: [2.1734,    41.3851], caption: "Camp Nou and Gaudi" },
-  { id: "tokyo",       name: "Tokyo, Japan",             coords: [139.6503,  35.6762], caption: "Lost in the neon and ramen" },
-  { id: "beijing",     name: "Beijing, China",           coords: [116.4074,  39.9042], caption: "The Great Wall" },
-  { id: "toronto",     name: "Toronto, Ontario",         coords: [-79.3832,  43.6532], caption: "Home base" },
-  { id: "victoria",    name: "Victoria, BC",             coords: [-123.3656, 48.4284], caption: "West coast" },
-  { id: "quebec",      name: "Quebec City, QC",          coords: [-71.2080,  46.8139], caption: "Belle province" },
-  { id: "edmonton",    name: "Edmonton, Alberta",        coords: [-113.4909, 53.5461], caption: "Big skies" },
-  { id: "albany",      name: "Albany, New York",         coords: [-73.7562,  42.6526], caption: "Empire State" },
-  { id: "sacramento",  name: "Sacramento, California",   coords: [-121.4944, 38.5816], caption: "Golden State" },
-  { id: "saltlake",    name: "Salt Lake City, Utah",     coords: [-111.8910, 40.7608], caption: "Red rock country" },
-  { id: "carsoncity",  name: "Carson City, Nevada",      coords: [-119.7674, 39.1638], caption: "Silver State" },
-  { id: "lansing",     name: "Lansing, Michigan",        coords: [-84.5555,  42.7325], caption: "Great Lakes" },
-  { id: "nashville",   name: "Nashville, Tennessee",     coords: [-86.7816,  36.1627], caption: "Music City" },
-  { id: "jefferson",   name: "Jefferson City, Missouri", coords: [-92.1735,  38.5767], caption: "Show-Me State" },
-  { id: "tallahassee", name: "Tallahassee, Florida",     coords: [-84.2807,  30.4518], caption: "Sunshine State" },
-  { id: "montpelier",  name: "Montpelier, Vermont",      coords: [-72.5778,  44.2601], caption: "Green Mountains" },
-  { id: "columbus",    name: "Columbus, Ohio",           coords: [-82.9988,  39.9612], caption: "Buckeye State" },
-  { id: "springfield", name: "Springfield, Illinois",    coords: [-89.6501,  39.7817], caption: "Land of Lincoln" },
+  { id: "london",      name: "London, UK",              coords: [51.5074,  -0.1278],   caption: "Caught a Man United away game", photos: [] },
+  { id: "manchester",  name: "Manchester, UK",           coords: [53.4808,  -2.2426],   caption: "Old Trafford", photos: [] },
+  { id: "paris",       name: "Paris, France",            coords: [48.8566,   2.3522],   caption: "City of lights", photos: [] },
+  { id: "chamonix",    name: "Chamonix, France",         coords: [45.9237,   6.8696],   caption: "Alps at their finest", photos: [] },
+  { id: "barcelona",   name: "Barcelona, Spain",         coords: [41.3851,   2.1734],   caption: "Camp Nou and Gaudi", photos: [] },
+  { id: "tokyo",       name: "Tokyo, Japan",             coords: [35.6762, 139.6503],   caption: "Lost in the neon and ramen", photos: [] },
+  { id: "beijing",     name: "Beijing, China",           coords: [39.9042, 116.4074],   caption: "The Great Wall", photos: [] },
+  { id: "toronto",     name: "Toronto, Ontario",         coords: [43.6532, -79.3832],   caption: "Home base", photos: [] },
+  { id: "victoria",    name: "Victoria, BC",             coords: [48.4284,-123.3656],   caption: "West coast", photos: [] },
+  { id: "quebec",      name: "Quebec City, QC",          coords: [46.8139, -71.2080],   caption: "Belle province", photos: [] },
+  { id: "edmonton",    name: "Edmonton, Alberta",        coords: [53.5461,-113.4909],   caption: "Big skies", photos: [] },
+  { id: "albany",      name: "Albany, New York",         coords: [42.6526, -73.7562],   caption: "Empire State", photos: [] },
+  { id: "sacramento",  name: "Sacramento, California",   coords: [38.5816,-121.4944],   caption: "Golden State", photos: [] },
+  { id: "saltlake",    name: "Salt Lake City, Utah",     coords: [40.7608,-111.8910],   caption: "Red rock country", photos: [] },
+  { id: "carsoncity",  name: "Carson City, Nevada",      coords: [39.1638,-119.7674],   caption: "Silver State", photos: [] },
+  { id: "lansing",     name: "Lansing, Michigan",        coords: [42.7325, -84.5555],   caption: "Great Lakes", photos: [] },
+  { id: "nashville",   name: "Nashville, Tennessee",     coords: [36.1627, -86.7816],   caption: "Music City", photos: [] },
+  { id: "jefferson",   name: "Jefferson City, Missouri", coords: [38.5767, -92.1735],   caption: "Show-Me State", photos: [] },
+  { id: "tallahassee", name: "Tallahassee, Florida",     coords: [30.4518, -84.2807],   caption: "Sunshine State", photos: [] },
+  { id: "montpelier",  name: "Montpelier, Vermont",      coords: [44.2601, -72.5778],   caption: "Green Mountains", photos: [] },
+  { id: "columbus",    name: "Columbus, Ohio",           coords: [39.9612, -82.9988],   caption: "Buckeye State", photos: [] },
+  { id: "springfield", name: "Springfield, Illinois",    coords: [39.7817, -89.6501],   caption: "Land of Lincoln", photos: [] },
 ];
 
 const pokeCards = [
@@ -36,203 +36,127 @@ const pokeCards = [
   { id: "regice",  name: "Regice * #90",  set: "Legend Maker",    img: "https://images.pokemontcg.io/ex12/90.png"  },
 ];
 
-function createPinImage(size = 52) {
-  const canvas = document.createElement("canvas");
-  canvas.width  = size;
-  canvas.height = Math.round(size * 1.4);
-  const ctx = canvas.getContext("2d");
-  const cx  = size / 2;
-  const r   = size * 0.42;
-  const tipY = canvas.height - 2;
+/* SVG pin markup — same shape as before */
+const PIN_SVG = `<svg width="28" height="38" viewBox="0 0 28 38" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="pin-shadow" x="-40%" y="-20%" width="180%" height="160%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="rgba(0,0,0,0.38)"/>
+    </filter>
+  </defs>
+  <path d="M14 0C6.27 0 0 6.27 0 14c0 9.8 14 24 14 24S28 23.8 28 14C28 6.27 21.73 0 14 0z"
+    fill="#DA291C" filter="url(#pin-shadow)"/>
+  <circle cx="14" cy="13" r="5.5" fill="white" opacity="0.93"/>
+</svg>`;
 
-  ctx.shadowColor   = "rgba(0,0,0,0.32)";
-  ctx.shadowBlur    = 7;
-  ctx.shadowOffsetY = 3;
-
-  ctx.beginPath();
-  ctx.arc(cx, r + 2, r, Math.PI, 0);
-  ctx.bezierCurveTo(cx + r, r * 1.6, cx + 4, tipY - 6, cx, tipY);
-  ctx.bezierCurveTo(cx - 4, tipY - 6, cx - r, r * 1.6, cx - r, r + 2);
-  ctx.closePath();
-  ctx.fillStyle = "#DA291C";
-  ctx.fill();
-
-  ctx.shadowColor = "transparent";
-  ctx.beginPath();
-  ctx.arc(cx, r + 2, r * 0.38, 0, Math.PI * 2);
-  ctx.fillStyle = "rgba(255,255,255,0.93)";
-  ctx.fill();
-
-  return ctx.getImageData(0, 0, canvas.width, canvas.height);
+function createPinElement() {
+  const el = document.createElement("div");
+  el.className = "map-pin-marker";
+  el.innerHTML = PIN_SVG;
+  el.style.width = "28px";
+  el.style.height = "38px";
+  el.style.cursor = "pointer";
+  return el;
 }
 
-function addPinsAndStyle(m, travelData, setActiveLoc, setPhotoIdx) {
-  // ── Google Maps-inspired color palette ──
-  // Land: soft sage green
-  const landLayers = [
-    "land", "land-structure", "landcover", "national-park",
-    "landuse", "landuse-residential",
-  ];
-  landLayers.forEach(id => {
-    if (m.getLayer(id)) {
-      try { m.setPaintProperty(id, "fill-color", "#e8f0e0"); } catch {}
-      try { m.setPaintProperty(id, "background-color", "#e8f0e0"); } catch {}
-    }
-  });
+const MapCanvas = memo(function MapCanvas({ onPinClick }) {
+  const containerRef = useRef(null);
+  const mapRef       = useRef(null);
+  const cbRef        = useRef(onPinClick);
 
-  // Background (ocean base)
-  if (m.getLayer("background")) {
-    m.setPaintProperty("background", "background-color", "#aacbdf");
-  }
-
-  // Water — Google's characteristic blue
-  ["water", "water-shadow"].forEach(id => {
-    if (m.getLayer(id)) m.setPaintProperty(id, "fill-color", "#9fc4d8");
-  });
-
-  // Waterways
-  if (m.getLayer("waterway")) {
-    m.setPaintProperty("waterway", "line-color", "#9fc4d8");
-  }
-
-  // Country fills — slightly lighter green so borders read clearly
-  ["admin-0-boundary-bg"].forEach(id => {
-    if (m.getLayer(id)) m.setPaintProperty(id, "line-color", "#b8d4b0");
-  });
-  if (m.getLayer("admin-0-boundary")) {
-    m.setPaintProperty("admin-0-boundary", "line-color", "#8aab82");
-    m.setPaintProperty("admin-0-boundary", "line-width", [
-      "interpolate", ["linear"], ["zoom"], 1, 0.6, 6, 1.4,
-    ]);
-  }
-
-  // State/province borders — dashed, subtle
-  if (m.getLayer("admin-1-boundary")) {
-    m.setPaintProperty("admin-1-boundary", "line-color", "#a8c4a0");
-    m.setPaintProperty("admin-1-boundary", "line-dasharray", [2, 2]);
-  }
-
-  // Roads — hide almost everything, keep only major highways faintly
-  const hideRoads = [
-    "road-street", "road-minor", "road-path", "road-pedestrian",
-    "road-secondary-tertiary", "road-label", "road-number-shield",
-    "tunnel-motorway-trunk", "tunnel-primary", "tunnel-secondary-tertiary",
-    "bridge-motorway-trunk", "bridge-primary", "bridge-secondary-tertiary",
-    "ferry", "aeroway-polygon", "aeroway-line",
-    "building", "building-outline",
-    "poi-label", "transit-label",
-    "pitch-outline", "golf-hole-line",
-  ];
-  hideRoads.forEach(id => {
-    if (m.getLayer(id)) m.setLayoutProperty(id, "visibility", "none");
-  });
-
-  // Keep motorways/primary roads but make them very faint — adds geography context
-  ["road-motorway-trunk", "road-primary"].forEach(id => {
-    if (m.getLayer(id)) {
-      m.setPaintProperty(id, "line-color", "#d4c8b8");
-      m.setPaintProperty(id, "line-opacity", 0.4);
-    }
-  });
-
-  // Country labels — always visible, Google-style dark grey
-  if (m.getLayer("country-label")) {
-    m.setLayoutProperty("country-label", "visibility", "visible");
-    m.setPaintProperty("country-label", "text-color", "#3d4a3a");
-    m.setPaintProperty("country-label", "text-halo-color", "#e8f0e0");
-    m.setPaintProperty("country-label", "text-halo-width", 1.5);
-  }
-
-  // City labels — fade in at zoom 3.5
-  ["settlement-major-label", "settlement-minor-label"].forEach(id => {
-    if (m.getLayer(id)) {
-      m.setLayoutProperty(id, "visibility", "visible");
-      m.setPaintProperty(id, "text-opacity", [
-        "interpolate", ["linear"], ["zoom"], 3.2, 0, 4.0, 1,
-      ]);
-      m.setPaintProperty(id, "text-color", "#3a4a38");
-      m.setPaintProperty(id, "text-halo-color", "#e8f0e0");
-      m.setPaintProperty(id, "text-halo-width", 1.2);
-    }
-  });
-
-  // ── Drop pins as a symbol layer ──
-  if (!m.getImage("travel-pin")) {
-    m.addImage("travel-pin", createPinImage(52), { pixelRatio: 2 });
-  }
-
-  if (!m.getSource("pins")) {
-    m.addSource("pins", {
-      type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: travelData.map(loc => ({
-          type: "Feature",
-          geometry: { type: "Point", coordinates: loc.coords },
-          properties: { id: loc.id },
-        })),
-      },
-    });
-  }
-
-  if (!m.getLayer("pins-layer")) {
-    m.addLayer({
-      id: "pins-layer",
-      type: "symbol",
-      source: "pins",
-      layout: {
-        "icon-image": "travel-pin",
-        "icon-size": ["interpolate", ["linear"], ["zoom"], 1, 0.40, 5, 0.55, 10, 0.72],
-        "icon-anchor": "bottom",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-      },
-    });
-  }
-
-  m.on("click", "pins-layer", (e) => {
-    const loc = travelData.find(l => l.id === e.features[0].properties.id);
-    if (loc) { setActiveLoc.current(loc); setPhotoIdx.current(0); }
-  });
-  m.on("mouseenter", "pins-layer", () => { m.getCanvas().style.cursor = "pointer"; });
-  m.on("mouseleave", "pins-layer", () => { m.getCanvas().style.cursor = ""; });
-}
-
-export default function App() {
-  const mapContainer = useRef(null);
-  const map          = useRef(null);
-  const [activeLocation, setActiveLocation] = useState(null);
-  const [photoIndex,     setPhotoIndex]     = useState(0);
-  const setActiveLoc = useRef(setActiveLocation);
-  const setPhotoIdx  = useRef(setPhotoIndex);
+  useEffect(() => { cbRef.current = onPinClick; });
 
   useEffect(() => {
-    if (map.current) return;
+    if (mapRef.current) return;
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/light-v11",
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+
+    const map = new mapboxgl.Map({
+      container: containerRef.current,
+      /*
+       * outdoors-v12 gives colorful terrain-based geography
+       * (greens, browns, blues, snow on mountains) without being
+       * too busy — we strip labels below.
+       */
+      style: "mapbox://styles/mapbox/outdoors-v12",
       center: [15, 25],
-      zoom: 1.6,
-      minZoom: 1,
-      maxZoom: 14,
-      projection: "mercator",
+      zoom: 1.8,
+      minZoom: 1.5,
+      maxZoom: 12,
+      renderWorldCopies: true,        // infinite horizontal scroll
+      maxPitch: 0,                    // keep it flat
+      dragRotate: false,              // no rotation
+      attributionControl: false,
+      logoPosition: "bottom-right",
     });
 
-    map.current.addControl(
-      new mapboxgl.NavigationControl({ showCompass: false }),
-      "bottom-right"
-    );
+    /* lock vertical so user can't scroll past poles */
+    map.setMaxBounds(null); // no hard lng bounds — infinite wrap
 
-    // Use 'load' (not 'style.load') — fires once everything is ready
-    map.current.on("load", () => {
-      addPinsAndStyle(map.current, travelData, setActiveLoc, setPhotoIdx);
+    /* Add minimal nav (zoom only, no compass) */
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+
+    map.on("style.load", () => {
+      /* Remove ALL label / text / symbol layers for a clean look */
+      const style = map.getStyle();
+      if (style && style.layers) {
+        style.layers.forEach((layer) => {
+          if (
+            layer.type === "symbol" ||
+            (layer.layout && layer.layout["text-field"]) ||
+            layer.id.includes("label") ||
+            layer.id.includes("place") ||
+            layer.id.includes("poi") ||
+            layer.id.includes("road") ||
+            layer.id.includes("transit") ||
+            layer.id.includes("path") ||
+            layer.id.includes("bridge") ||
+            layer.id.includes("tunnel") ||
+            layer.id.includes("aeroway") ||
+            layer.id.includes("admin") ||
+            layer.id.includes("building") ||
+            layer.id.includes("structure")
+          ) {
+            map.removeLayer(layer.id);
+          }
+        });
+      }
     });
 
-    return () => { map.current?.remove(); map.current = null; };
+    /* Add pin markers */
+    travelData.forEach((loc) => {
+      const el = createPinElement();
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        cbRef.current(loc);
+      });
+
+      new mapboxgl.Marker({ element: el, anchor: "bottom" })
+        .setLngLat([loc.coords[1], loc.coords[0]]) // mapbox uses [lng, lat]
+        .addTo(map);
+    });
+
+    mapRef.current = map;
+
+    return () => {
+      map.remove();
+      mapRef.current = null;
+    };
+  }, []);
+
+  return <div ref={containerRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
+});
+
+export default function App() {
+  const [activeLocation, setActiveLocation] = useState(null);
+  const [photoIndex,     setPhotoIndex]     = useState(0);
+
+  const handlePinClick = useCallback((loc) => {
+    setActiveLocation(loc);
+    setPhotoIndex(0);
   }, []);
 
   const closePopup = () => setActiveLocation(null);
+  const photos = activeLocation?.photos ?? [];
 
   return (
     <div className="site-wrapper">
@@ -240,7 +164,6 @@ export default function App() {
         <div className="about-inner">
           <h1 className="name">Max Deng | 邓东垚</h1>
           <div className="divider" />
-
           <ul className="info-list">
             <li>
               <span className="bullet">—</span>
@@ -262,16 +185,8 @@ export default function App() {
                 </a>
               </span>
             </li>
-
-            <li className="section-header-item">
-              <span className="section-label">other</span>
-            </li>
-
-            <li>
-              <span className="bullet">↳</span>
-              <span>pokemon card collector — some favorites:</span>
-            </li>
-
+            <li className="section-header-item"><span className="section-label">other</span></li>
+            <li><span className="bullet">↳</span><span>some favorite pokemon cards:</span></li>
             <li className="card-row-item">
               <div className="card-row">
                 {pokeCards.map(card => (
@@ -289,13 +204,8 @@ export default function App() {
                 ))}
               </div>
             </li>
-
-            <li>
-              <span className="bullet">↳</span>
-              <span>places i've been (click the pins) <span className="map-arrow">→</span></span>
-            </li>
+            <li><span className="bullet">↳</span><span>places i've been (click the pins) <span className="map-arrow">→</span></span></li>
           </ul>
-
           <div className="socials">
             <a href="https://www.linkedin.com/in/max-deng-9683b7309/" target="_blank" rel="noreferrer" className="social-link" aria-label="LinkedIn">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
@@ -315,24 +225,24 @@ export default function App() {
 
       <main className="map-panel">
         <div className="map-box">
-          <div ref={mapContainer} className={`mapbox-container ${activeLocation ? "map-blurred" : ""}`} />
-
+          <MapCanvas onPinClick={handlePinClick} />
+          {activeLocation && <div className="map-blur-overlay" />}
           {activeLocation && (
             <div className="map-popup-overlay" onClick={closePopup}>
               <div className="popup-card" onClick={e => e.stopPropagation()}>
                 <button className="popup-close" onClick={closePopup}>✕</button>
                 <div className="popup-header">
-                  <div className="popup-location">— {activeLocation.name}</div>
+                  <div className="popup-location">{activeLocation.name}</div>
                 </div>
                 <div className="photo-area">
-                  {activeLocation.photos.length > 0 ? (
+                  {photos.length > 0 ? (
                     <>
-                      <img src={activeLocation.photos[photoIndex]} alt={activeLocation.name} className="popup-photo" />
-                      {activeLocation.photos.length > 1 && (
+                      <img src={photos[photoIndex]} alt={activeLocation.name} className="popup-photo" />
+                      {photos.length > 1 && (
                         <div className="carousel-controls">
                           <button onClick={() => setPhotoIndex(i => Math.max(0, i - 1))} disabled={photoIndex === 0}>‹</button>
-                          <span>{photoIndex + 1} / {activeLocation.photos.length}</span>
-                          <button onClick={() => setPhotoIndex(i => Math.min(activeLocation.photos.length - 1, i + 1))} disabled={photoIndex === activeLocation.photos.length - 1}>›</button>
+                          <span>{photoIndex + 1} / {photos.length}</span>
+                          <button onClick={() => setPhotoIndex(i => Math.min(photos.length - 1, i + 1))} disabled={photoIndex === photos.length - 1}>›</button>
                         </div>
                       )}
                     </>
@@ -344,9 +254,9 @@ export default function App() {
                   )}
                 </div>
                 <div className="popup-caption">{activeLocation.caption}</div>
-                {activeLocation.photos.length > 1 && (
+                {photos.length > 1 && (
                   <div className="dot-row">
-                    {activeLocation.photos.map((_, i) => (
+                    {photos.map((_, i) => (
                       <button key={i} className={`dot ${i === photoIndex ? "active" : ""}`} onClick={() => setPhotoIndex(i)} />
                     ))}
                   </div>
