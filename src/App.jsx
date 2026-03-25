@@ -5,29 +5,96 @@ import "./App.css";
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 
+/*
+ * ════════════════════════════════════════════════════════════
+ *  HOW TO ADD A NEW PIN
+ *
+ *  1. Copy one of the objects below and paste it into the array.
+ *  2. Fill in each field:
+ *
+ *     id      → a unique short name, no spaces (e.g. "tokyo")
+ *     name    → location title shown bold in the popup (e.g. "Tokyo, Japan")
+ *     date    → (optional) shown after the name in lighter gray
+ *               (e.g. "2024" or "Summer 2023"). Leave as "" to skip.
+ *     coords  → [latitude, longitude]
+ *               Google Maps: right-click any spot → copy coordinates
+ *               They come as "lat, lng" — keep that order.
+ *     caption → italic text below the photos (e.g. "Lost in the neon")
+ *     photos  → array of image paths relative to the public/ folder
+ *               e.g. ["/pictures/tokyo1.jpg", "/pictures/tokyo2.jpg"]
+ *               Put your images in  public/pictures/
+ *               Leave as [] to show "photos coming soon"
+ *
+ *  3. Save the file. The pin appears instantly on hot reload.
+ *
+ *  EXAMPLE:
+ *  {
+ *    id: "tokyo",
+ *    name: "Tokyo, Japan",
+ *    date: "2024",
+ *    coords: [35.6762, 139.6503],
+ *    caption: "Lost in the neon and ramen",
+ *    photos: ["/pictures/tokyo1.jpg", "/pictures/tokyo2.jpg"],
+ *  },
+ * ════════════════════════════════════════════════════════════
+ */
 const travelData = [
-  { id: "london",      name: "London, UK",              coords: [51.5074,  -0.1278],   caption: "Caught a Man United away game", photos: [] },
-  { id: "manchester",  name: "Manchester, UK",           coords: [53.4808,  -2.2426],   caption: "Old Trafford", photos: [] },
-  { id: "paris",       name: "Paris, France",            coords: [48.8566,   2.3522],   caption: "City of lights", photos: [] },
-  { id: "chamonix",    name: "Chamonix, France",         coords: [45.9237,   6.8696],   caption: "Alps at their finest", photos: [] },
-  { id: "barcelona",   name: "Barcelona, Spain",         coords: [41.3851,   2.1734],   caption: "Camp Nou and Gaudi", photos: [] },
-  { id: "tokyo",       name: "Tokyo, Japan",             coords: [35.6762, 139.6503],   caption: "Lost in the neon and ramen", photos: [] },
-  { id: "beijing",     name: "Beijing, China",           coords: [39.9042, 116.4074],   caption: "The Great Wall", photos: [] },
-  { id: "toronto",     name: "Toronto, Ontario",         coords: [43.6532, -79.3832],   caption: "Home base", photos: [] },
-  { id: "victoria",    name: "Victoria, BC",             coords: [48.4284,-123.3656],   caption: "West coast", photos: [] },
-  { id: "quebec",      name: "Quebec City, QC",          coords: [46.8139, -71.2080],   caption: "Belle province", photos: [] },
-  { id: "edmonton",    name: "Edmonton, Alberta",        coords: [53.5461,-113.4909],   caption: "Big skies", photos: [] },
-  { id: "albany",      name: "Albany, New York",         coords: [42.6526, -73.7562],   caption: "Empire State", photos: [] },
-  { id: "sacramento",  name: "Sacramento, California",   coords: [38.5816,-121.4944],   caption: "Golden State", photos: [] },
-  { id: "saltlake",    name: "Salt Lake City, Utah",     coords: [40.7608,-111.8910],   caption: "Red rock country", photos: [] },
-  { id: "carsoncity",  name: "Carson City, Nevada",      coords: [39.1638,-119.7674],   caption: "Silver State", photos: [] },
-  { id: "lansing",     name: "Lansing, Michigan",        coords: [42.7325, -84.5555],   caption: "Great Lakes", photos: [] },
-  { id: "nashville",   name: "Nashville, Tennessee",     coords: [36.1627, -86.7816],   caption: "Music City", photos: [] },
-  { id: "jefferson",   name: "Jefferson City, Missouri", coords: [38.5767, -92.1735],   caption: "Show-Me State", photos: [] },
-  { id: "tallahassee", name: "Tallahassee, Florida",     coords: [30.4518, -84.2807],   caption: "Sunshine State", photos: [] },
-  { id: "montpelier",  name: "Montpelier, Vermont",      coords: [44.2601, -72.5778],   caption: "Green Mountains", photos: [] },
-  { id: "columbus",    name: "Columbus, Ohio",           coords: [39.9612, -82.9988],   caption: "Buckeye State", photos: [] },
-  { id: "springfield", name: "Springfield, Illinois",    coords: [39.7817, -89.6501],   caption: "Land of Lincoln", photos: [] },
+  {
+    id: "guelph",
+    name: "Guelph, Ontario",
+    date: "2009 - 2026",
+    coords: [43.5448, -80.2482],
+    caption: "Home ❤️",
+    photos: ["/pictures/guelph1.jpg", "/pictures/guelph2.jpg"],
+  },
+  {
+    id: "turks",
+    name: "Providenciales, Turks and Caicos",
+    date: "August 2025",
+    coords: [21.784946, -72.225583],
+    caption: "Sharkbite every night 🦈",
+    photos: ["/pictures/turks1.jpg", "/pictures/turks2.jpg", "/pictures/turks3.jpg", "/pictures/turks4.jpg", "/pictures/turks5.jpg", "/pictures/turks6.jpg", "/pictures/turks7.jpg", "/pictures/turks8.jpg", "/pictures/turks9.jpg"],
+  },
+  {
+    id: "mexico",
+    name: "Cancun, Mexico",
+    date: "Dec 2025",
+    coords: [20.33982545170957, -87.35298800237985],
+    caption: "",
+    photos: ["/pictures/mexico1.jpg", "/pictures/mexico2.jpg", "/pictures/mexico3.jpg", "/pictures/mexico4.jpg", "/pictures/mexico5.jpg"],
+  },
+  {
+    id: "killbear",
+    name: "Killbear Provincial Park, Ontario",
+    date: "2024, 2025",
+    coords: [45.34828716279987, -80.19571641346579],
+    caption: "",
+    photos: ["/pictures/killbear5.jpg", "/pictures/killbear4.jpg", "/pictures/killbear3.jpg", "/pictures/killbear2.jpg", "/pictures/killbear1.jpg"],
+  },
+  {
+    id: "saintsauveur",
+    name: "Saint Sauveur, Quebec",
+    date: "Febuary 2026",
+    coords: [45.934724210558954, -74.39866381880596],
+    caption: "",
+    photos: ["/pictures/saintsauveur1.jpg", "/pictures/saintsauveur2.jpg", "/pictures/saintsauveur3.jpg", "/pictures/saintsauveur4.jpg", "/pictures/saintsauveur5.jpg", "/pictures/saintsauveur6.jpg", "/pictures/saintsauveur7.jpg"],
+  },
+  {
+    id: "vermont",
+    name: "Smugglers' Notch, Vermont",
+    date: "2024, 2025",
+    coords: [44.58790772701563, -72.78336640045767],
+    caption: "",
+    photos: ["/pictures/vermont1.jpg", "/pictures/vermont2.jpg", "/pictures/vermont3.jpg", "/pictures/vermont4.jpg", "/pictures/vermont5.jpg", "/pictures/vermont6.jpg", "/pictures/vermont7.jpg", "/pictures/vermont8.jpg"],
+  },
+  {
+    id: "waterloo",
+    name: "Waterloo, Ontario",
+    date: "2025 - Present",
+    coords: [43.47295153111691, -80.5420170914422],
+    caption: "",
+    photos: ["/pictures/waterloo1.jpg", "/pictures/waterloo2.jpg", "/pictures/waterloo3.jpg", "/pictures/waterloo4.jpg", "/pictures/waterloo5.jpg"],
+  },
 ];
 
 const pokeCards = [
@@ -96,30 +163,34 @@ const MapCanvas = memo(function MapCanvas({ onPinClick }) {
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
 
     map.on("style.load", () => {
-      /* Remove ALL label / text / symbol layers for a clean look */
       const style = map.getStyle();
-      if (style && style.layers) {
-        style.layers.forEach((layer) => {
-          if (
-            layer.type === "symbol" ||
-            (layer.layout && layer.layout["text-field"]) ||
-            layer.id.includes("label") ||
-            layer.id.includes("place") ||
-            layer.id.includes("poi") ||
-            layer.id.includes("road") ||
-            layer.id.includes("transit") ||
-            layer.id.includes("path") ||
-            layer.id.includes("bridge") ||
-            layer.id.includes("tunnel") ||
-            layer.id.includes("aeroway") ||
-            layer.id.includes("admin") ||
-            layer.id.includes("building") ||
-            layer.id.includes("structure")
-          ) {
-            map.removeLayer(layer.id);
-          }
-        });
-      }
+      if (!style?.layers) return;
+
+      style.layers.forEach((layer) => {
+        const id = layer.id;
+
+        /* ── Hide ALL labels and clutter for a clean look ── */
+        const shouldHide =
+          layer.type === "symbol" ||
+          id.includes("label") ||
+          id.includes("place") ||
+          id.includes("poi") ||
+          id.includes("road") ||
+          id.includes("transit") ||
+          id.includes("path") ||
+          id.includes("bridge") ||
+          id.includes("tunnel") ||
+          id.includes("aeroway") ||
+          id.includes("admin") ||
+          id.includes("building") ||
+          id.includes("structure");
+
+        if (shouldHide) {
+          try {
+            map.setLayoutProperty(id, "visibility", "none");
+          } catch (_) { /* ignore */ }
+        }
+      });
     });
 
     /* Add pin markers */
@@ -233,17 +304,28 @@ export default function App() {
                 <button className="popup-close" onClick={closePopup}>✕</button>
                 <div className="popup-header">
                   <div className="popup-location">{activeLocation.name}</div>
+                  {activeLocation.date && (
+                    <div className="popup-date">{activeLocation.date}</div>
+                  )}
                 </div>
                 <div className="photo-area">
                   {photos.length > 0 ? (
                     <>
                       <img src={photos[photoIndex]} alt={activeLocation.name} className="popup-photo" />
                       {photos.length > 1 && (
-                        <div className="carousel-controls">
-                          <button onClick={() => setPhotoIndex(i => Math.max(0, i - 1))} disabled={photoIndex === 0}>‹</button>
-                          <span>{photoIndex + 1} / {photos.length}</span>
-                          <button onClick={() => setPhotoIndex(i => Math.min(photos.length - 1, i + 1))} disabled={photoIndex === photos.length - 1}>›</button>
-                        </div>
+                        <>
+                          {photoIndex > 0 && (
+                            <button className="arrow arrow-left" onClick={() => setPhotoIndex(i => i - 1)}>‹</button>
+                          )}
+                          {photoIndex < photos.length - 1 && (
+                            <button className="arrow arrow-right" onClick={() => setPhotoIndex(i => i + 1)}>›</button>
+                          )}
+                          <div className="dot-row">
+                            {photos.map((_, i) => (
+                              <button key={i} className={`dot ${i === photoIndex ? "active" : ""}`} onClick={() => setPhotoIndex(i)} />
+                            ))}
+                          </div>
+                        </>
                       )}
                     </>
                   ) : (
@@ -254,13 +336,6 @@ export default function App() {
                   )}
                 </div>
                 <div className="popup-caption">{activeLocation.caption}</div>
-                {photos.length > 1 && (
-                  <div className="dot-row">
-                    {photos.map((_, i) => (
-                      <button key={i} className={`dot ${i === photoIndex ? "active" : ""}`} onClick={() => setPhotoIndex(i)} />
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           )}
