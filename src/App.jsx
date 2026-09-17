@@ -22,7 +22,7 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
  *     caption → italic text below the photos (e.g. "Lost in the neon")
  *     photos  → array of image paths relative to the public/ folder
  *               e.g. ["/pictures/tokyo1.jpg", "/pictures/tokyo2.jpg"]
- *               Put your images in  public/pictures/
+ *               Put your images in  public/pictures/ (lowercase .jpg)
  *               Leave as [] to show "photos coming soon"
  *
  *  3. Save the file. The pin appears instantly on hot reload.
@@ -74,26 +74,10 @@ const travelData = [
   {
     id: "saintsauveur",
     name: "Saint Sauveur, Quebec",
-    date: "Febuary 2026",
+    date: "February 2026",
     coords: [45.934724210558954, -74.39866381880596],
     caption: "",
     photos: ["/pictures/saintsauveur1.jpg", "/pictures/saintsauveur2.jpg", "/pictures/saintsauveur3.jpg", "/pictures/saintsauveur4.jpg", "/pictures/saintsauveur5.jpg", "/pictures/saintsauveur6.jpg", "/pictures/saintsauveur7.jpg"],
-  },
-  {
-    id: "vermont",
-    name: "Smugglers' Notch, Vermont",
-    date: "2024, 2025",
-    coords: [44.58790772701563, -72.78336640045767],
-    caption: "",
-    photos: ["/pictures/vermont1.jpg", "/pictures/vermont2.jpg", "/pictures/vermont3.jpg", "/pictures/vermont4.jpg", "/pictures/vermont5.jpg", "/pictures/vermont6.jpg", "/pictures/vermont7.jpg", "/pictures/vermont8.jpg"],
-  },
-  {
-    id: "waterloo",
-    name: "Waterloo, Ontario",
-    date: "2025 - Present",
-    coords: [43.47295153111691, -80.5420170914422],
-    caption: "",
-    photos: ["/pictures/waterloo1.jpg", "/pictures/waterloo2.jpg", "/pictures/waterloo3.jpg", "/pictures/waterloo4.jpg", "/pictures/waterloo5.jpg"],
   },
 ];
 
@@ -153,11 +137,10 @@ const MapCanvas = memo(function MapCanvas({ onPinClick }) {
       maxPitch: 0,                    // keep it flat
       dragRotate: false,              // no rotation
       attributionControl: false,
+      /* on phones, require two fingers to pan so the page can still scroll */
+      cooperativeGestures: window.matchMedia("(max-width: 768px)").matches,
       logoPosition: "bottom-right",
     });
-
-    /* lock vertical so user can't scroll past poles */
-    map.setMaxBounds(null); // no hard lng bounds — infinite wrap
 
     /* Add minimal nav (zoom only, no compass) */
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
@@ -188,7 +171,7 @@ const MapCanvas = memo(function MapCanvas({ onPinClick }) {
         if (shouldHide) {
           try {
             map.setLayoutProperty(id, "visibility", "none");
-          } catch (_) { /* ignore */ }
+          } catch { /* ignore */ }
         }
       });
     });
@@ -227,6 +210,17 @@ export default function App() {
   }, []);
 
   const closePopup = () => setActiveLocation(null);
+
+  useEffect(() => {
+    if (!activeLocation) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setActiveLocation(null);
+      if (e.key === "ArrowLeft")  setPhotoIndex(i => Math.max(i - 1, 0));
+      if (e.key === "ArrowRight") setPhotoIndex(i => Math.min(i + 1, activeLocation.photos.length - 1));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeLocation]);
   const photos = activeLocation?.photos ?? [];
 
   return (
@@ -249,7 +243,7 @@ export default function App() {
             <li>
               <span className="bullet">—</span>
               <span>
-                incoming financial analyst @{" "}
+                previously financial analyst @{" "}
                 <a href="https://www.rbcx.com/" target="_blank" rel="noreferrer" className="link link-rbc">
                   <img src="https://www.rbc.com/favicon.ico" alt="" className="site-favicon" onError={e => e.target.style.display = "none"} />
                   RBCx
@@ -301,7 +295,7 @@ export default function App() {
           {activeLocation && (
             <div className="map-popup-overlay" onClick={closePopup}>
               <div className="popup-card" onClick={e => e.stopPropagation()}>
-                <button className="popup-close" onClick={closePopup}>✕</button>
+                <button className="popup-close" onClick={closePopup} aria-label="Close">✕</button>
                 <div className="popup-header">
                   <div className="popup-location">{activeLocation.name}</div>
                   {activeLocation.date && (
@@ -315,14 +309,14 @@ export default function App() {
                       {photos.length > 1 && (
                         <>
                           {photoIndex > 0 && (
-                            <button className="arrow arrow-left" onClick={() => setPhotoIndex(i => i - 1)}>‹</button>
+                            <button className="arrow arrow-left" aria-label="Previous photo" onClick={() => setPhotoIndex(i => i - 1)}>‹</button>
                           )}
                           {photoIndex < photos.length - 1 && (
-                            <button className="arrow arrow-right" onClick={() => setPhotoIndex(i => i + 1)}>›</button>
+                            <button className="arrow arrow-right" aria-label="Next photo" onClick={() => setPhotoIndex(i => i + 1)}>›</button>
                           )}
                           <div className="dot-row">
                             {photos.map((_, i) => (
-                              <button key={i} className={`dot ${i === photoIndex ? "active" : ""}`} onClick={() => setPhotoIndex(i)} />
+                              <button key={i} aria-label={`Photo ${i + 1}`} className={`dot ${i === photoIndex ? "active" : ""}`} onClick={() => setPhotoIndex(i)} />
                             ))}
                           </div>
                         </>
