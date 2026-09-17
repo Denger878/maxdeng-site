@@ -118,6 +118,10 @@ const MapCanvas = memo(function MapCanvas({ onPinClick }) {
 
   useEffect(() => {
     if (mapRef.current) return;
+    if (!MAPBOX_TOKEN) {
+      console.error("VITE_MAPBOX_TOKEN is not set — the map can't load.");
+      return;
+    }
 
     mapboxgl.accessToken = MAPBOX_TOKEN;
 
