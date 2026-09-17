@@ -133,7 +133,7 @@ const MapCanvas = memo(function MapCanvas({ onPinClick }) {
        * too busy — we strip labels below.
        */
       style: "mapbox://styles/mapbox/outdoors-v12",
-      center: [15, 25],
+      center: [-95, 40],              // [lng, lat] — North America
       zoom: 1.8,
       minZoom: 1.5,
       maxZoom: 12,
