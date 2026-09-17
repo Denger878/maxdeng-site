@@ -247,7 +247,7 @@ export default function App() {
             <li>
               <span className="bullet">—</span>
               <span>
-                previously financial analyst @{" "}
+                prev financial analyst @{" "}
                 <a href="https://www.rbcx.com/" target="_blank" rel="noreferrer" className="link link-rbc">
                   <img src="https://www.rbc.com/favicon.ico" alt="" className="site-favicon" onError={e => e.target.style.display = "none"} />
                   RBCx
